@@ -21,7 +21,7 @@ export const handleBless = async (interaction: Interaction) => {
   // Should never reach here, but guard in case no user found
   if (!targetUser) return await interaction.reply(`Can't find user`);
 
-  await updateBalance(targetUser.id, targetAmount);
+  await updateBalance(targetUser, targetAmount);
   await interaction.reply(
     `${targetUser}, you have been blessed with ${targetAmount} coins!`
   );

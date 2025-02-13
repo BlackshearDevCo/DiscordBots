@@ -15,9 +15,7 @@ export const handleBank = async (interaction: Interaction) => {
 
   // Format the balances into a readable message
   const balanceMessage = data
-    .map(
-      (user) => `<@${user.user_id}>: ${user.balance} coins` // Formatting as user mention and balance
-    )
+    .map((user) => `${user.username}: ${user.balance} coins`)
     .join("\n");
 
   // If no balances were found

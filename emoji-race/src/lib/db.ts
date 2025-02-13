@@ -1,7 +1,13 @@
 import { UserId } from "src/types";
 import { supabase } from "src/lib/clients";
 import { STARTING_BALANCE } from "src/constants";
-import { getBalance, getLosingBets, getWinningBets } from "src/lib/utils";
+import {
+  getBalance,
+  getLosingBets,
+  getUserName,
+  getWinningBets,
+} from "src/lib/utils";
+import { User } from "discord.js";
 
 export async function getUserBalance(userId: UserId) {
   const { data, error } = await supabase
@@ -35,17 +41,28 @@ export async function getUserBalance(userId: UserId) {
 }
 
 export async function getAllBalances() {
-  return await supabase.from("balances").select("user_id, balance");
+  return await supabase
+    .from("balances")
+    .select("user_id, username, balance")
+    .order("balance", { ascending: false });
 }
 
-export async function updateBalance(userId: UserId, amount: number) {
-  const userBalance = await getBalance(userId);
+export async function updateBalance(user: User, amount: number) {
+  const userBalance = await getBalance(user.id);
+  const username = user.globalName || user.username;
 
-  const { error } = await supabase
-    .from("balances")
-    .upsert([{ user_id: userId, balance: Math.max(userBalance + amount, 0) }], {
+  const { error } = await supabase.from("balances").upsert(
+    [
+      {
+        user_id: user.id,
+        username,
+        balance: Math.max(userBalance + amount, 0),
+      },
+    ],
+    {
       onConflict: "user_id",
-    });
+    }
+  );
 
   if (error) {
     console.error("Error updating balance:", error);
@@ -56,22 +73,24 @@ export async function updateUserStatsLeaderboard(winner: string) {
   const winningBets = getWinningBets(winner);
   const losingBets = getLosingBets(winner);
 
-  winningBets.forEach(([userId]) => {
-    updateUserStats(userId, true);
+  winningBets.forEach(([_, { user }]) => {
+    updateUserStats(user, true);
   });
 
-  losingBets.forEach(([userId]) => {
-    updateUserStats(userId, false);
+  losingBets.forEach(([_, { user }]) => {
+    updateUserStats(user, false);
   });
 }
 
-async function updateUserStats(userId: UserId, isWin: boolean) {
-  const userStatsData = await getUserStats(userId);
+async function updateUserStats(user: User, isWin: boolean) {
+  const userStatsData = await getUserStats(user);
+  const username = getUserName(user);
 
   const { error } = await supabase.from("user_stats").upsert(
     [
       {
-        user_id: userId,
+        user_id: user.id,
+        username,
         wins: isWin ? userStatsData.wins + 1 : userStatsData.wins,
         losses: isWin ? userStatsData.losses : userStatsData.losses + 1,
       },
@@ -86,19 +105,20 @@ async function updateUserStats(userId: UserId, isWin: boolean) {
   }
 }
 
-async function getUserStats(userId: UserId) {
+async function getUserStats(user: User) {
   const { data, error } = await supabase
     .from("user_stats")
     .select("*")
-    .eq("user_id", userId)
+    .eq("user_id", user.id)
     .single();
+  const username = getUserName(user);
 
   if (error) {
     if (error.code === "PGRST116") {
       // If no rows found, create a new row with the starting stats
       const { data: insertData, error: insertError } = await supabase
         .from("user_stats")
-        .insert([{ user_id: userId, wins: 0, losses: 0 }])
+        .insert([{ user_id: user.id, username, wins: 0, losses: 0 }])
         .select()
         .single();
 
@@ -120,6 +140,6 @@ async function getUserStats(userId: UserId) {
 export async function getAllStats() {
   return await supabase
     .from("user_stats")
-    .select("user_id, wins, losses")
+    .select("user_id, username, wins, losses")
     .order("wins", { ascending: false }); // Sort by wins (descending)
 }

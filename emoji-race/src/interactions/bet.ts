@@ -44,11 +44,15 @@ export const handleBet = async (interaction: Interaction) => {
     });
   }
 
-  await updateBalance(interaction.user.id, -betAmount);
+  await updateBalance(interaction.user, -betAmount);
   updateRaceState({
     bets: {
       ...bets,
-      [interaction.user.id]: { emoji, amount: betAmount },
+      [interaction.user.id]: {
+        emoji,
+        amount: betAmount,
+        user: interaction.user,
+      },
     },
   });
 

@@ -15,7 +15,7 @@ export const handleStats = async (interaction: Interaction) => {
   const leaderboardMessage = data
     .map(
       (user, index) =>
-        `#${index + 1} <@${user.user_id}>: ${user.wins} wins, ${
+        `#${index + 1} ${user.username}: ${user.wins} wins, ${
           user.losses
         } losses`
     )

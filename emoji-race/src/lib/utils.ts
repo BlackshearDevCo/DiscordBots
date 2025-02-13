@@ -1,6 +1,6 @@
 import { Positions, Racers, UserId } from "src/types";
 import { getUserBalance, updateBalance } from "src/lib/db";
-import { Guild } from "discord.js";
+import { Guild, User } from "discord.js";
 import { DEFAULT_RACERS, TRACK_LENGTH } from "src/constants";
 import { getCurrentRaceState } from "src/raceState";
 
@@ -89,8 +89,12 @@ export async function distributeWinnings(winner: string) {
   let payoutText = "**Payouts:**\n";
   for (let [userId, bet] of winningBets) {
     let userShare = (bet.amount / totalWinningBet) * totalBetPool;
-    await updateBalance(userId, userShare);
+    await updateBalance(bet.user, userShare);
     payoutText += `<@${userId}> wins ${Math.floor(userShare)} coins!\n`;
   }
   return payoutText;
+}
+
+export function getUserName(user: User) {
+  return user.globalName || user.username;
 }
