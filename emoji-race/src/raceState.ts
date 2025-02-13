@@ -17,4 +17,4 @@ function getCurrentRaceState() {
   return raceState;
 }
 
-export { raceState, updateRaceState, getCurrentRaceState };
+export { updateRaceState, getCurrentRaceState };

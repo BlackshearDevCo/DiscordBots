@@ -4,12 +4,13 @@ import { getAllBalances } from "src/lib/db";
 export const handleBank = async (interaction: Interaction) => {
   if (!interaction.isCommand()) return;
 
-  // Fetch all user balances from the Supabase database
   const { data, error } = await getAllBalances();
 
   if (error) {
     console.error("Error fetching all balances:", error);
-    return interaction.reply("There was an error fetching the balances.");
+    return interaction.reply(
+      "Error fetching all balances. Try again in a few minutes."
+    );
   }
 
   // Format the balances into a readable message
@@ -20,10 +21,8 @@ export const handleBank = async (interaction: Interaction) => {
     .join("\n");
 
   // If no balances were found
-  if (!balanceMessage) {
-    return interaction.reply("No user balances found.");
-  }
+  if (!balanceMessage) return interaction.reply("No user balances found.");
 
   // Send the formatted balances to the channel
-  await interaction.reply(`**User Balances**:\n${balanceMessage}`);
+  return await interaction.reply(`**User Balances**:\n${balanceMessage}`);
 };

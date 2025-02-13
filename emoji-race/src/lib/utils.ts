@@ -2,7 +2,7 @@ import { Positions, Racers, UserId } from "src/types";
 import { getUserBalance, updateBalance } from "src/lib/db";
 import { Guild } from "discord.js";
 import { DEFAULT_RACERS, TRACK_LENGTH } from "src/constants";
-import { raceState } from "src/raceState";
+import { getCurrentRaceState } from "src/raceState";
 
 export async function getBalance(userId: UserId) {
   return getUserBalance(userId);
@@ -26,33 +26,33 @@ export function renderTrack(racers: Racers, positions: Positions) {
 }
 
 export function getMovement() {
-  const moves = [1, 2, 3];
+  const potentialMoves = [1, 2, 3];
   const weights = [0.4, 0.35, 0.25];
-  let random = Math.random();
-  let cumulative = 0;
 
-  for (let i = 0; i < moves.length; i++) {
-    cumulative += weights[i];
-    if (random < cumulative) {
-      return moves[i];
-    }
+  for (let i = 0; i < potentialMoves.length; i++) {
+    // Checks random value to be below weighted value to determine potential move
+    // Higher moves are less likely
+    if (Math.random() < weights[i]) return potentialMoves[i];
   }
+
+  // Fallback if all potential moves fail
   return 1;
 }
 
-export function handleTiebreaker(winners: Racers, positions: Positions) {
+// Returns winner, settling tiebreaker if necessary
+export function determineWinner(winners: Racers, positions: Positions) {
   let maxDistance = Math.max(...winners.map((racer) => positions[racer]));
   let topCandidates = winners.filter(
     (racer) => positions[racer] === maxDistance
   );
-  if (topCandidates.length === 1) {
-    return topCandidates[0];
-  }
+
+  if (topCandidates.length === 1) return topCandidates[0];
   return topCandidates[Math.floor(Math.random() * topCandidates.length)];
 }
 
+// Potential refactor for performance: Combine with getLosingBets
 export function getWinningBets(winningEmoji: string) {
-  const { bets } = raceState;
+  const { bets } = getCurrentRaceState();
   const winningBets = Object.entries(bets).filter(
     ([_, bet]) => bet.emoji === winningEmoji
   );
@@ -60,8 +60,9 @@ export function getWinningBets(winningEmoji: string) {
   return winningBets;
 }
 
+// Potential refactor for performance: Combine with getWinningBets
 export function getLosingBets(winningEmoji: string) {
-  const { bets } = raceState;
+  const { bets } = getCurrentRaceState();
   const losingBets = Object.entries(bets).filter(
     ([_, bet]) => bet.emoji !== winningEmoji
   );
@@ -71,8 +72,7 @@ export function getLosingBets(winningEmoji: string) {
 
 export async function distributeWinnings(winner: string) {
   const winningBets = getWinningBets(winner);
-
-  const { bets } = raceState;
+  const { bets } = getCurrentRaceState();
 
   if (winningBets.length === 0)
     return "No one bet on the winning emoji! The house wins. 🎰";

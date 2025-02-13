@@ -7,7 +7,7 @@ export const handleStats = async (interaction: Interaction) => {
   const { data, error } = await getAllStats();
 
   if (error) {
-    console.error("Error fetching leaderboard:", error);
+    console.error("There was an error fetching the leaderboard.", error);
     return interaction.reply("There was an error fetching the leaderboard.");
   }
 
@@ -21,10 +21,8 @@ export const handleStats = async (interaction: Interaction) => {
     )
     .join("\n");
 
-  if (!leaderboardMessage) {
+  if (!leaderboardMessage)
     return interaction.reply("No leaderboard data found.");
-  }
 
-  // Send the formatted leaderboard to the channel
   await interaction.reply(`**User Stats**:\n${leaderboardMessage}`);
 };

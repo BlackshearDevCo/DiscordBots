@@ -3,7 +3,7 @@ export interface RaceState {
   bets: {
     [key: string]: Bet;
   };
-  selectedRacers: Racers; // TODO: Update
+  selectedRacers: Racers;
 }
 
 export type Racers = Array<string>;
