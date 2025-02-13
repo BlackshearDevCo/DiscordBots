@@ -3,8 +3,8 @@
     "lib": ["es2015"],
     "target": "ESNext",
     "module": "commonjs",
-    "rootDir": "./src/",
-    "outDir": "./dist/",
+    "rootDir": "./src",
+    "outDir": "./dist",
     "strict": true,
     "moduleResolution": "node",
     "importHelpers": true,
@@ -24,6 +24,6 @@
     }
   },
   "files": ["src/bot.ts"],
-  "include": ["./**/*.ts", "./**/*.d.ts"],
+  "include": ["./**/*.ts"],
   "exclude": ["node_modules", "dist"]
 }

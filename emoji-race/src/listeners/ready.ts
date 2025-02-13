@@ -1,7 +1,7 @@
 import "dotenv/config";
 import { Client, Events, REST, Routes } from "discord.js";
 
-import { commands } from "../commands";
+import { commands } from "src/commands";
 
 export const onReady = (client: Client): void => {
   client.once(Events.ClientReady, async (readyClient) => {
