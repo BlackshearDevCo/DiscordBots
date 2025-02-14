@@ -16,11 +16,15 @@ export function getAvailableEmojis(guild: Guild) {
   return guildEmojis;
 }
 
-export function renderTrack(racers: Racers, positions: Positions) {
+export function renderTrack(
+  racers: Racers,
+  positions: Positions,
+  trackLength: number = TRACK_LENGTH
+) {
   return racers
     .map((emoji) => {
-      const pos = Math.min(positions[emoji], TRACK_LENGTH);
-      return "⬛".repeat(pos) + emoji + "⬛".repeat(TRACK_LENGTH - pos) + "🏁";
+      const pos = Math.min(positions[emoji], trackLength);
+      return "⬛".repeat(pos) + emoji + "⬛".repeat(trackLength - pos) + "🏁";
     })
     .join("\n");
 }
