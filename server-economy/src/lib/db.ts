@@ -42,12 +42,22 @@ export async function getAllBalances() {
     .order("balance", { ascending: false });
 }
 
-export async function earnCoins(userId: string, amount: number) {
+export async function awardCoins(userId: string, amount: number) {
   const { data, error } = await supabase.rpc("increment_balance", {
     _user_id: userId,
     _amount: amount,
   });
 
   if (error) console.error("Error earning coins:", error);
+  return data;
+}
+
+export async function loseCoins(userId: string, amount: number) {
+  const { data, error } = await supabase.rpc("decrement_balance", {
+    _user_id: userId,
+    _amount: amount,
+  });
+
+  if (error) console.error("Error losing coins:", error);
   return data;
 }

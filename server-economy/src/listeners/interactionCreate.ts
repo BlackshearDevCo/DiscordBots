@@ -2,6 +2,7 @@ import { Client, Events, Interaction } from "discord.js";
 import { handleBalance } from "src/interactions/balance";
 import { handleBank } from "src/interactions/bank";
 import { handlePay } from "src/interactions/pay";
+import { handleRob } from "src/interactions/steal";
 import { CommandName } from "src/types";
 
 export const onInteractionCreate = (client: Client): void => {
@@ -17,22 +18,13 @@ export const onInteractionCreate = (client: Client): void => {
         handlePay(interaction);
         break;
 
-      case "bank": {
+      case "bank":
         handleBank(interaction);
         break;
-      }
 
-      // daily (get a daily reward)
-
-      // gamble? (just gamble your money and see if you win/lose)
-
-      // steal (try to steal money from other users, but risk getting caught)
-
-      // invest (simple, invest money and receive return at a later point)
-
-      // giveaway (users can enter to win gold)
-
-      // lottery
+      case "rob":
+        handleRob(interaction);
+        break;
 
       default: {
         await interaction.reply("Invalid command.");

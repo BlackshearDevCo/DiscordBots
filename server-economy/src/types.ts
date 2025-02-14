@@ -1,1 +1,1 @@
-export type CommandName = "balance" | "pay" | "bank";
+export type CommandName = "balance" | "pay" | "bank" | "rob";
