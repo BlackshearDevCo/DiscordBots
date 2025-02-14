@@ -1,5 +1,10 @@
 import { Interaction, MessageFlags } from "discord.js";
-import { awardGold, checkBalance, loseGold } from "src/lib/db";
+import {
+  awardGold,
+  checkBalance,
+  loseGold,
+  trackTransaction,
+} from "src/lib/db";
 import { getUserName } from "src/lib/utils";
 
 const TARGET_AMOUNT = 500;
@@ -27,7 +32,7 @@ export async function handleRob(interaction: Interaction) {
 
   if (targetBalance < MIN_AMOUNT)
     return interaction.reply({
-      content: `You can't rob someone with less than ${MIN_AMOUNT} coins. **Go eat the rich.**`,
+      content: `You can't rob someone with less than ${MIN_AMOUNT} gold. **Go eat the rich.**`,
       flags: [MessageFlags.Ephemeral],
     });
 
@@ -38,6 +43,11 @@ export async function handleRob(interaction: Interaction) {
     const lostAmount = Math.round(stolenAmount / 2);
 
     await loseGold(interaction.user.id, lostAmount);
+    await trackTransaction({
+      receiver_id: interaction.user.id,
+      amount: lostAmount,
+      type: "rob",
+    });
 
     return interaction.reply(
       `<@${interaction.user.id}> got caught trying to rob <@${target.id}>!` +
@@ -48,9 +58,15 @@ export async function handleRob(interaction: Interaction) {
 
   await awardGold(interaction.user.id, stolenAmount); // Give stolen gold to criminal
   await loseGold(target.id, stolenAmount); // Take stolen gold from target
+  await trackTransaction({
+    sender_id: target.id,
+    receiver_id: interaction.user.id,
+    amount: stolenAmount,
+    type: "rob",
+  });
 
   interaction.reply({
-    content: `You successfully stole **${stolenAmount} coins** from <@${target.id}>! 💰}`,
+    content: `You successfully stole **${stolenAmount} gold** from <@${target.id}>! 💰}`,
     flags: [MessageFlags.Ephemeral],
   });
 }

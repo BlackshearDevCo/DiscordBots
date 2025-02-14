@@ -1,14 +1,7 @@
 import "dotenv/config";
-import {
-  Channel,
-  Client,
-  Events,
-  MessageFlags,
-  VoiceChannel,
-  VoiceState,
-} from "discord.js";
+import { Client, Events, VoiceState } from "discord.js";
 import { getCurrentServerState, updateServerState } from "src/serverState";
-import { awardGold } from "src/lib/db";
+import { awardGold, trackTransaction } from "src/lib/db";
 
 export const onVoiceStateUpdate = (client: Client): void => {
   client.on(
@@ -41,7 +34,14 @@ export const onVoiceStateUpdate = (client: Client): void => {
           voiceChannelEntries[oldChannelId][userId]
         );
 
-        if (payment) await awardGold(userId, payment);
+        if (payment) {
+          await awardGold(userId, payment);
+          await trackTransaction({
+            receiver_id: userId,
+            amount: payment,
+            type: "earn",
+          });
+        }
 
         const newVoiceChannelEntries = Object.fromEntries(
           Object.entries(voiceChannelEntries[oldChannelId]).filter(
@@ -72,8 +72,8 @@ async function processCallPayment(
 
   // Calculate duration in minutes (rounded)
   const durationMinutes = Math.max(1, minutesJoined);
-  const earnedCoins = durationMinutes * payRatePerMinute;
+  const earnedGold = durationMinutes * payRatePerMinute;
 
   // At least 1 min
-  return durationMinutes > 0 ? earnedCoins : 0;
+  return durationMinutes > 0 ? earnedGold : 0;
 }

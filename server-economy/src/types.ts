@@ -1,4 +1,4 @@
-export type CommandName = "balance" | "pay" | "bank" | "rob";
+export type CommandName = "balance" | "pay" | "bank" | "rob" | "transactions";
 
 export type ServerState = {
   voiceChannelEntries: {
@@ -7,3 +7,20 @@ export type ServerState = {
     };
   };
 };
+
+export interface TransactionEntry {
+  sender_id?: string;
+  receiver_id?: string;
+  amount: number;
+  type: TransactionType;
+}
+
+export interface Transaction {
+  sender_id?: string;
+  receiver_id?: string;
+  amount: number;
+  type: TransactionType;
+  timestamp: string;
+}
+
+export type TransactionType = "payment" | "rob" | "earn" | "lose";

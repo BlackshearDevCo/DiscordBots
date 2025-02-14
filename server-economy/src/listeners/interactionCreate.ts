@@ -3,6 +3,7 @@ import { handleBalance } from "src/interactions/balance";
 import { handleBank } from "src/interactions/bank";
 import { handlePay } from "src/interactions/pay";
 import { handleRob } from "src/interactions/rob";
+import { handleTransactions } from "src/interactions/transactions";
 import { CommandName } from "src/types";
 
 export const onInteractionCreate = (client: Client): void => {
@@ -24,6 +25,10 @@ export const onInteractionCreate = (client: Client): void => {
 
       case "rob":
         handleRob(interaction);
+        break;
+
+      case "transactions":
+        handleTransactions(interaction);
         break;
 
       default: {

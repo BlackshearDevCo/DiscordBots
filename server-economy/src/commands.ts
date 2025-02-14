@@ -25,4 +25,7 @@ export const commands = [
     .addUserOption((option) =>
       option.setName("user").setDescription("User to rob").setRequired(true)
     ),
+  new SlashCommandBuilder()
+    .setName("transactions")
+    .setDescription("View your recent transactions."),
 ];

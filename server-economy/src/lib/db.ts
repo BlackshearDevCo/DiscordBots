@@ -2,8 +2,20 @@ import { User } from "discord.js";
 import "dotenv/config";
 import { supabase } from "src/lib/clients";
 import { getUserName } from "src/lib/utils";
+import { TransactionEntry } from "src/types";
 
 const STARTING_BALANCE = 10000;
+
+export async function trackTransaction(transaction: TransactionEntry) {
+  const { data, error } = await supabase
+    .from("transactions")
+    .insert([transaction])
+    .select();
+
+  if (error) console.error("Error logging transaction", error);
+
+  return data;
+}
 
 export async function checkBalance(user: User): Promise<number | null> {
   const { data, error } = await supabase
@@ -42,13 +54,34 @@ export async function getAllBalances() {
     .order("balance", { ascending: false });
 }
 
+export async function getRecentTransactions(userId: User["id"]) {
+  return await supabase
+    .from("transactions")
+    .select("sender_id, receiver_id, amount, type, timestamp")
+    .or(`sender_id.eq.${userId},receiver_id.eq.${userId}`)
+    .order("timestamp", { ascending: false })
+    .limit(10);
+}
+
+export async function transferBalance(
+  senderId: string,
+  receiverId: string,
+  amount: number
+) {
+  return await supabase.rpc("transfer_balance", {
+    sender_id: senderId,
+    receiver_id: receiverId,
+    amount,
+  });
+}
+
 export async function awardGold(userId: string, amount: number) {
   const { data, error } = await supabase.rpc("increment_balance", {
     _user_id: userId,
     _amount: amount,
   });
 
-  if (error) console.error("Error earning coins:", error);
+  if (error) console.error("Error earning gold:", error);
   return data;
 }
 
@@ -58,6 +91,6 @@ export async function loseGold(userId: string, amount: number) {
     _amount: amount,
   });
 
-  if (error) console.error("Error losing coins:", error);
+  if (error) console.error("Error losing gold:", error);
   return data;
 }
