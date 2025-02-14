@@ -2,7 +2,7 @@ import { Client, Events, Interaction } from "discord.js";
 import { handleBalance } from "src/interactions/balance";
 import { handleBank } from "src/interactions/bank";
 import { handlePay } from "src/interactions/pay";
-import { handleRob } from "src/interactions/steal";
+import { handleRob } from "src/interactions/rob";
 import { CommandName } from "src/types";
 
 export const onInteractionCreate = (client: Client): void => {
