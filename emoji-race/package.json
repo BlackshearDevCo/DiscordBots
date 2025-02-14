@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "start": "ts-node -r tsconfig-paths/register src/bot.ts",
-    "build": "tsc --project tsconfig.json && tsc-alias"
+    "build": "tsc --project tsconfig.json && tsc-alias",
+    "deploy-local": "yarn build && npx pm2 start dist/bot.js --name EmojiRaceDiscordBot",
+    "kill-deployment": "npx pm2 stop EmojiRaceDiscordBot"
   },
   "author": "",
   "license": "ISC",
