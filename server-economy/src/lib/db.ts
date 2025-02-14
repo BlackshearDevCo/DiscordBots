@@ -42,7 +42,7 @@ export async function getAllBalances() {
     .order("balance", { ascending: false });
 }
 
-export async function awardCoins(userId: string, amount: number) {
+export async function awardGold(userId: string, amount: number) {
   const { data, error } = await supabase.rpc("increment_balance", {
     _user_id: userId,
     _amount: amount,
@@ -52,7 +52,7 @@ export async function awardCoins(userId: string, amount: number) {
   return data;
 }
 
-export async function loseCoins(userId: string, amount: number) {
+export async function loseGold(userId: string, amount: number) {
   const { data, error } = await supabase.rpc("decrement_balance", {
     _user_id: userId,
     _amount: amount,
