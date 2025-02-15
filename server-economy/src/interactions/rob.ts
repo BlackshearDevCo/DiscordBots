@@ -80,7 +80,7 @@ export async function handleRob(interaction: Interaction) {
     );
   }
 
-  await awardGold(userId, stolenAmount); // Give stolen gold to criminal
+  await awardGold(interaction.user, stolenAmount); // Give stolen gold to criminal
   await loseGold(target.id, stolenAmount); // Take stolen gold from target
   await trackTransaction({
     sender_id: target.id,

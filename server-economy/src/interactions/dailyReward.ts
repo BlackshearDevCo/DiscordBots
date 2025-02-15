@@ -28,7 +28,7 @@ export async function handleDailyReward(interaction: Interaction) {
     },
   });
 
-  await awardGold(userId, DAILY_REWARD);
+  await awardGold(interaction.user, DAILY_REWARD);
   await trackTransaction({
     receiver_id: userId,
     amount: DAILY_REWARD,

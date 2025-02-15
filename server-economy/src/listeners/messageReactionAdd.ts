@@ -1,14 +1,15 @@
 import "dotenv/config";
-import { Client, Events } from "discord.js";
+import { Client, Events, User } from "discord.js";
 import { awardGold, trackTransaction } from "src/lib/db";
 
 export const onMessageReactionAdd = (client: Client): void => {
   client.on(Events.MessageReactionAdd, async (reaction, user) => {
     const amount = 5;
-    if (reaction.partial) {
+    if (reaction.partial || user.partial) {
       // If the message this reaction belongs to was removed, the fetching might result in an API error which should be handled
       try {
         await reaction.fetch();
+        await user.fetch();
       } catch (error) {
         console.error("Something went wrong when fetching the message:", error);
         // Return as `reaction.message.author` may be undefined/null
@@ -17,7 +18,7 @@ export const onMessageReactionAdd = (client: Client): void => {
     }
 
     // Give users gold for every reaction
-    await awardGold(user.id, amount);
+    await awardGold(user as User, amount);
     await trackTransaction({
       receiver_id: user.id,
       amount: amount,

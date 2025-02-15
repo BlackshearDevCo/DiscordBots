@@ -9,7 +9,7 @@ export const onVoiceStateUpdate = (client: Client): void => {
     async (oldVoiceState: VoiceState, newVoiceState: VoiceState) => {
       const oldChannelId = oldVoiceState.channelId;
       const newChannelId = newVoiceState.channelId;
-      const userId = newVoiceState.member?.id;
+      const userId = newVoiceState.member?.user.id;
       const { voiceChannelEntries } = getCurrentServerState();
 
       // User joins voice channel
@@ -35,7 +35,7 @@ export const onVoiceStateUpdate = (client: Client): void => {
         );
 
         if (payment) {
-          await awardGold(userId, payment);
+          await awardGold(newVoiceState.member.user, payment);
           await trackTransaction({
             receiver_id: userId,
             amount: payment,

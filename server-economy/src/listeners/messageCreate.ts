@@ -6,7 +6,7 @@ export const onMessageCreate = (client: Client): void => {
   client.on(Events.MessageCreate, async (message) => {
     const amount = 15;
     // Give users gold for every message they send
-    await awardGold(message.author.id, amount);
+    await awardGold(message.author, amount);
     await trackTransaction({
       receiver_id: message.author.id,
       amount: amount,

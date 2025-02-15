@@ -99,10 +99,11 @@ export async function transferBalance(
   });
 }
 
-export async function awardGold(userId: string, amount: number) {
+export async function awardGold(user: User, amount: number) {
   const { data, error } = await supabase.rpc("increment_balance", {
-    _user_id: userId,
+    _user_id: user.id,
     _amount: amount,
+    _username: getUserName(user),
   });
 
   if (error) console.error("Error earning gold:", error);
