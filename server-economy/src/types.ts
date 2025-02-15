@@ -4,7 +4,8 @@ export type CommandName =
   | "bank"
   | "rob"
   | "transactions"
-  | "request";
+  | "request"
+  | "daily";
 
 export type ServerState = {
   voiceChannelEntries: {
@@ -14,6 +15,9 @@ export type ServerState = {
   };
   robCooldowns: {
     [userId: string]: number; // timestamp
+  };
+  dailyRewardCooldown: {
+    [userId: string]: string; // date string (YYYY-MM-DD)
   };
 };
 

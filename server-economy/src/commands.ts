@@ -43,4 +43,7 @@ export const commands = [
         .setDescription("Amount to request")
         .setRequired(true)
     ),
+  new SlashCommandBuilder()
+    .setName("daily")
+    .setDescription("Redeem your daily reward!"),
 ];

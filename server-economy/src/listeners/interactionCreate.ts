@@ -8,6 +8,7 @@ import {
 } from "discord.js";
 import { handleBalance } from "src/interactions/balance";
 import { handleBank } from "src/interactions/bank";
+import { handleDailyReward } from "src/interactions/dailyReward";
 import { handlePay } from "src/interactions/pay";
 import {
   handleApproveRequest,
@@ -48,6 +49,10 @@ export const onInteractionCreate = (client: Client): void => {
 
       case "transactions":
         handleTransactions(interaction);
+        break;
+
+      case "daily":
+        handleDailyReward(interaction);
         break;
 
       default: {
