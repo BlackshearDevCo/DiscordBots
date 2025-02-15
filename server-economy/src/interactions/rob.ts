@@ -6,12 +6,15 @@ import {
   trackTransaction,
 } from "src/lib/db";
 import { getUserName } from "src/lib/utils";
+import { getCurrentServerState, updateServerState } from "src/serverState";
 
 const TARGET_AMOUNT = 500;
 const MIN_AMOUNT = 2500;
+const STEAL_COOLDOWN = 10 * 60 * 1000; // 5 minutes in milliseconds
 
 export async function handleRob(interaction: Interaction) {
   if (!interaction.isCommand()) return;
+  const userId = interaction.user.id;
 
   const target = interaction.options.get("user")?.user;
   if (!target) {
@@ -39,28 +42,49 @@ export async function handleRob(interaction: Interaction) {
   const failChance = 0.3; // 30% chance to fail
   const stolenAmount = Math.floor(Math.random() * (TARGET_AMOUNT - 5 + 1)) + 5; // Steal between TARGET_AMOUNT and 5 gold
 
+  // Handle rob cooldown
+  const { robCooldowns } = getCurrentServerState();
+  const lastUsed = robCooldowns[userId];
+  const timeLeft = STEAL_COOLDOWN - (Date.now() - lastUsed);
+
+  if (timeLeft > 0) {
+    const minutes = Math.ceil(timeLeft / 60000);
+    return interaction.reply({
+      content: `You must wait ${minutes} more minute(s) before stealing again!`,
+      flags: [MessageFlags.Ephemeral],
+    });
+  }
+
+  updateServerState({
+    robCooldowns: {
+      ...robCooldowns,
+      [userId]: Date.now(),
+    },
+  });
+
+  // Handle random chance at failing rob event
   if (Math.random() < failChance) {
     const lostAmount = Math.round(stolenAmount / 2);
 
-    await loseGold(interaction.user.id, lostAmount);
+    await loseGold(userId, lostAmount);
     await trackTransaction({
-      receiver_id: interaction.user.id,
+      receiver_id: userId,
       amount: lostAmount,
       type: "rob",
     });
 
     return interaction.reply(
-      `<@${interaction.user.id}> got caught trying to rob <@${target.id}>!` +
+      `<@${userId}> got caught trying to rob <@${target.id}>!` +
         "\n" +
         `They lost ${lostAmount} gold in the process.`
     );
   }
 
-  await awardGold(interaction.user.id, stolenAmount); // Give stolen gold to criminal
+  await awardGold(userId, stolenAmount); // Give stolen gold to criminal
   await loseGold(target.id, stolenAmount); // Take stolen gold from target
   await trackTransaction({
     sender_id: target.id,
-    receiver_id: interaction.user.id,
+    receiver_id: userId,
     amount: stolenAmount,
     type: "rob",
   });

@@ -2,6 +2,7 @@ import { ServerState } from "src/types";
 
 let serverState: ServerState = {
   voiceChannelEntries: {},
+  robCooldowns: {},
 };
 
 function updateServerState(newServerState: Partial<ServerState>) {

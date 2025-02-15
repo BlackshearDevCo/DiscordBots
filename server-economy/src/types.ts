@@ -12,6 +12,9 @@ export type ServerState = {
       [userId: string]: number; // timestamp
     };
   };
+  robCooldowns: {
+    [userId: string]: number; // timestamp
+  };
 };
 
 export type PaymentRequestStatus = "pending" | "expired" | "paid" | "denied";
