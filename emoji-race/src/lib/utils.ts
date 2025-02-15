@@ -60,17 +60,16 @@ export function getWinningBets(winningEmoji: string) {
   const winningBets = Object.entries(bets).filter(
     ([_, bet]) => bet.emoji === winningEmoji
   );
-
   return winningBets;
 }
 
 // Potential refactor for performance: Combine with getWinningBets
 export function getLosingBets(winningEmoji: string) {
   const { bets } = getCurrentRaceState();
+
   const losingBets = Object.entries(bets).filter(
     ([_, bet]) => bet.emoji !== winningEmoji
   );
-
   return losingBets;
 }
 

@@ -89,8 +89,8 @@ export const handleRace = async (interaction: Interaction) => {
         const payoutText = await distributeWinnings(winner);
 
         // Reset race state
-        updateRaceState({ raceActive: false, selectedRacers: [], bets: {} });
         updateUserStatsLeaderboard(winner);
+        updateRaceState({ raceActive: false, selectedRacers: [], bets: {} });
 
         const winningText = isTiebreaker
           ? `🏆 The winner is **${winner}** by a pixel!`

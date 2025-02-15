@@ -20,10 +20,4 @@ export interface Bet {
 
 export type UserId = string;
 
-export type CommandName =
-  | "bank"
-  | "stats"
-  | "balance"
-  | "bless"
-  | "race"
-  | "bet";
+export type CommandName = "stats" | "race" | "bet";

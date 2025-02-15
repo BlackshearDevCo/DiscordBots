@@ -1,5 +1,8 @@
 import { UserId } from "src/types";
-import { supabase } from "src/lib/clients";
+import {
+  emojiRaceSupabaseClient,
+  serverEconomySupabaseClient,
+} from "src/lib/clients";
 import { STARTING_BALANCE } from "src/constants";
 import {
   getBalance,
@@ -10,7 +13,7 @@ import {
 import { User } from "discord.js";
 
 export async function getUserBalance(userId: UserId) {
-  const { data, error } = await supabase
+  const { data, error } = await serverEconomySupabaseClient
     .from("balances")
     .select("balance")
     .eq("user_id", userId)
@@ -19,7 +22,7 @@ export async function getUserBalance(userId: UserId) {
   if (error) {
     if (error.code === "PGRST116") {
       // If no rows found, create a new row with the starting balance
-      const { error: insertError } = await supabase
+      const { error: insertError } = await serverEconomySupabaseClient
         .from("balances")
         .insert([{ user_id: userId, balance: STARTING_BALANCE }])
         .select();
@@ -40,18 +43,11 @@ export async function getUserBalance(userId: UserId) {
   return data.balance || STARTING_BALANCE;
 }
 
-export async function getAllBalances() {
-  return await supabase
-    .from("balances")
-    .select("user_id, username, balance")
-    .order("balance", { ascending: false });
-}
-
 export async function updateBalance(user: User, amount: number) {
   const userBalance = await getBalance(user.id);
   const username = user.globalName || user.username;
 
-  const { error } = await supabase.from("balances").upsert(
+  const { error } = await serverEconomySupabaseClient.from("balances").upsert(
     [
       {
         user_id: user.id,
@@ -86,7 +82,7 @@ async function updateUserStats(user: User, isWin: boolean) {
   const userStatsData = await getUserStats(user);
   const username = getUserName(user);
 
-  const { error } = await supabase.from("user_stats").upsert(
+  const { error } = await emojiRaceSupabaseClient.from("user_stats").upsert(
     [
       {
         user_id: user.id,
@@ -106,7 +102,7 @@ async function updateUserStats(user: User, isWin: boolean) {
 }
 
 async function getUserStats(user: User) {
-  const { data, error } = await supabase
+  const { data, error } = await emojiRaceSupabaseClient
     .from("user_stats")
     .select("*")
     .eq("user_id", user.id)
@@ -116,11 +112,12 @@ async function getUserStats(user: User) {
   if (error) {
     if (error.code === "PGRST116") {
       // If no rows found, create a new row with the starting stats
-      const { data: insertData, error: insertError } = await supabase
-        .from("user_stats")
-        .insert([{ user_id: user.id, username, wins: 0, losses: 0 }])
-        .select()
-        .single();
+      const { data: insertData, error: insertError } =
+        await emojiRaceSupabaseClient
+          .from("user_stats")
+          .insert([{ user_id: user.id, username, wins: 0, losses: 0 }])
+          .select()
+          .single();
 
       if (insertError) {
         console.error("Error inserting new user stats:", insertError);
@@ -138,7 +135,7 @@ async function getUserStats(user: User) {
 }
 
 export async function getAllStats() {
-  return await supabase
+  return await emojiRaceSupabaseClient
     .from("user_stats")
     .select("user_id, username, wins, losses")
     .order("wins", { ascending: false }); // Sort by wins (descending)
