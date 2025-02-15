@@ -13,7 +13,7 @@ export const onVoiceStateUpdate = (client: Client): void => {
       const { voiceChannelEntries } = getCurrentServerState();
 
       // User joins voice channel
-      if (userId && newChannelId) {
+      if (userId && newChannelId && !oldChannelId) {
         updateServerState({
           voiceChannelEntries: {
             ...voiceChannelEntries,
@@ -68,7 +68,7 @@ async function processCallPayment(
 ) {
   const payRatePerMinute = 25;
 
-  const minutesJoined = Math.round((leaveTimestamp - joinTimestamp) / 60000);
+  const minutesJoined = Math.round((joinTimestamp - leaveTimestamp) / 60000);
 
   // Calculate duration in minutes (rounded)
   const durationMinutes = Math.max(1, minutesJoined);
