@@ -28,4 +28,19 @@ export const commands = [
   new SlashCommandBuilder()
     .setName("transactions")
     .setDescription("View your recent transactions."),
+  new SlashCommandBuilder()
+    .setName("request")
+    .setDescription("Request gold from another user.")
+    .addUserOption((option) =>
+      option
+        .setName("user")
+        .setDescription("User to request gold from")
+        .setRequired(true)
+    )
+    .addIntegerOption((option) =>
+      option
+        .setName("amount")
+        .setDescription("Amount to request")
+        .setRequired(true)
+    ),
 ];

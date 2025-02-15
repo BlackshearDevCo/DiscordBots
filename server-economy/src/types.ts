@@ -1,4 +1,10 @@
-export type CommandName = "balance" | "pay" | "bank" | "rob" | "transactions";
+export type CommandName =
+  | "balance"
+  | "pay"
+  | "bank"
+  | "rob"
+  | "transactions"
+  | "request";
 
 export type ServerState = {
   voiceChannelEntries: {
@@ -7,6 +13,23 @@ export type ServerState = {
     };
   };
 };
+
+export type PaymentRequestStatus = "pending" | "expired" | "paid" | "denied";
+
+export interface PaymentRequestEntry {
+  requester_id: string;
+  recipient_id: string;
+  amount: number;
+  status: PaymentRequestStatus;
+}
+
+export interface PaymentRequest extends PaymentRequestEntry {
+  id: number;
+  paid_at: string;
+  created_at: string;
+}
+
+export type TransactionType = "payment" | "rob" | "earn" | "lose";
 
 export interface TransactionEntry {
   sender_id?: string;
@@ -22,5 +45,3 @@ export interface Transaction {
   type: TransactionType;
   timestamp: string;
 }
-
-export type TransactionType = "payment" | "rob" | "earn" | "lose";

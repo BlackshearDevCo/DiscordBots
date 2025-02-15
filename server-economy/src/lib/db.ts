@@ -2,7 +2,11 @@ import { User } from "discord.js";
 import "dotenv/config";
 import { supabase } from "src/lib/clients";
 import { getUserName } from "src/lib/utils";
-import { TransactionEntry } from "src/types";
+import {
+  PaymentRequest,
+  PaymentRequestEntry,
+  TransactionEntry,
+} from "src/types";
 
 const STARTING_BALANCE = 10000;
 
@@ -15,6 +19,26 @@ export async function trackTransaction(transaction: TransactionEntry) {
   if (error) console.error("Error logging transaction", error);
 
   return data;
+}
+
+export async function trackRequest(request: PaymentRequestEntry) {
+  return await supabase.from("requests").insert([request]).select().single();
+}
+
+export async function getRequest(requestId: PaymentRequest["id"]) {
+  return await supabase
+    .from("requests")
+    .select("*")
+    .eq("id", requestId)
+    .single();
+}
+
+export async function updateRequest(request: Partial<PaymentRequest>) {
+  return await supabase
+    .from("requests")
+    .update(request)
+    .eq("id", request.id)
+    .select();
 }
 
 export async function checkBalance(user: User): Promise<number | null> {

@@ -1,4 +1,4 @@
-import { Interaction } from "discord.js";
+import { Interaction, MessageFlags } from "discord.js";
 import { trackTransaction, transferBalance } from "src/lib/db";
 
 export async function handlePay(interaction: Interaction) {
@@ -9,14 +9,20 @@ export async function handlePay(interaction: Interaction) {
   const amount = interaction.options.get("amount")?.value as number;
 
   const { error } = await transferBalance(senderId, receiverId, amount);
+  if (error) {
+    console.error("Error transferring gold:", error);
+    return interaction.reply({
+      content: "Error transferring gold. Try again later.",
+      flags: [MessageFlags.Ephemeral],
+    });
+  }
+
   await trackTransaction({
     sender_id: senderId,
     receiver_id: receiverId,
     amount,
     type: "payment",
   });
-
-  if (error) console.error("Error transferring gold:", error);
   await interaction.reply(
     `<@${interaction.user.id}> paid ${amount} gold to <@${receiverId}>`
   );
