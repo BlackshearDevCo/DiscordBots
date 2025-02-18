@@ -1,4 +1,4 @@
-import { emojiRaceSupabase } from "src/lib/clients";
+import { supabase } from "shared/clients";
 import { getLosingBets, getWinningBets } from "src/lib/utils";
 import { User } from "discord.js";
 import { getUserName } from "shared/utils";
@@ -20,7 +20,7 @@ async function updateUserStats(user: User, isWin: boolean) {
   const userStatsData = await getUserStats(user);
   const username = getUserName(user);
 
-  const { error } = await emojiRaceSupabase.from("user_stats").upsert(
+  const { error } = await supabase.from("user_stats").upsert(
     [
       {
         user_id: user.id,
@@ -40,7 +40,7 @@ async function updateUserStats(user: User, isWin: boolean) {
 }
 
 async function getUserStats(user: User) {
-  const { data, error } = await emojiRaceSupabase
+  const { data, error } = await supabase
     .from("user_stats")
     .select("*")
     .eq("user_id", user.id)
@@ -50,7 +50,7 @@ async function getUserStats(user: User) {
   if (error) {
     if (error.code === "PGRST116") {
       // If no rows found, create a new row with the starting stats
-      const { data: insertData, error: insertError } = await emojiRaceSupabase
+      const { data: insertData, error: insertError } = await supabase
         .from("user_stats")
         .insert([{ user_id: user.id, username, wins: 0, losses: 0 }])
         .select()
@@ -72,7 +72,7 @@ async function getUserStats(user: User) {
 }
 
 export async function getAllStats() {
-  return await emojiRaceSupabase
+  return await supabase
     .from("user_stats")
     .select("user_id, username, wins, losses")
     .order("wins", { ascending: false }); // Sort by wins (descending)

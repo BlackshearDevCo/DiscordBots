@@ -1,11 +1,11 @@
 import { User } from "discord.js";
-import { serverEconomySupabase } from "./clients";
+import { supabase } from "./clients";
 import { getUserName } from "./utils";
 
 const STARTING_BALANCE = 10000;
 
 export async function checkBalance(user: User): Promise<number | null> {
-  const { data, error } = await serverEconomySupabase
+  const { data, error } = await supabase
     .from("balances")
     .select("balance")
     .eq("user_id", user.id)
@@ -15,7 +15,7 @@ export async function checkBalance(user: User): Promise<number | null> {
     if (error.code === "PGRST116") {
       const username = getUserName(user);
 
-      const { error: insertError } = await serverEconomySupabase
+      const { error: insertError } = await supabase
         .from("balances")
         .insert([{ user_id: user.id, username, balance: STARTING_BALANCE }])
         .select();
@@ -35,7 +35,7 @@ export async function checkBalance(user: User): Promise<number | null> {
 }
 
 export async function awardGold(user: User, amount: number) {
-  const { data, error } = await serverEconomySupabase.rpc("increment_balance", {
+  const { data, error } = await supabase.rpc("increment_balance", {
     _user_id: user.id,
     _amount: amount,
     _username: getUserName(user),
@@ -46,7 +46,7 @@ export async function awardGold(user: User, amount: number) {
 }
 
 export async function loseGold(userId: string, amount: number) {
-  const { data, error } = await serverEconomySupabase.rpc("decrement_balance", {
+  const { data, error } = await supabase.rpc("decrement_balance", {
     _user_id: userId,
     _amount: amount,
   });
@@ -60,7 +60,7 @@ export async function transferBalance(
   receiverId: string,
   amount: number
 ) {
-  return await serverEconomySupabase.rpc("transfer_balance", {
+  return await supabase.rpc("transfer_balance", {
     sender_id: senderId,
     receiver_id: receiverId,
     amount,

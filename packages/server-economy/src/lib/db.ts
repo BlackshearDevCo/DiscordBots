@@ -1,6 +1,6 @@
 import "dotenv/config";
 import { User } from "discord.js";
-import { serverEconomySupabase } from "shared/clients";
+import { supabase } from "shared/clients";
 import {
   PaymentRequest,
   PaymentRequestEntry,
@@ -8,7 +8,7 @@ import {
 } from "src/types";
 
 export async function trackTransaction(transaction: TransactionEntry) {
-  const { data, error } = await serverEconomySupabase
+  const { data, error } = await supabase
     .from("transactions")
     .insert([transaction])
     .select();
@@ -19,15 +19,11 @@ export async function trackTransaction(transaction: TransactionEntry) {
 }
 
 export async function trackRequest(request: PaymentRequestEntry) {
-  return await serverEconomySupabase
-    .from("requests")
-    .insert([request])
-    .select()
-    .single();
+  return await supabase.from("requests").insert([request]).select().single();
 }
 
 export async function getRequest(requestId: PaymentRequest["id"]) {
-  return await serverEconomySupabase
+  return await supabase
     .from("requests")
     .select("*")
     .eq("id", requestId)
@@ -35,7 +31,7 @@ export async function getRequest(requestId: PaymentRequest["id"]) {
 }
 
 export async function updateRequest(request: Partial<PaymentRequest>) {
-  return await serverEconomySupabase
+  return await supabase
     .from("requests")
     .update(request)
     .eq("id", request.id)
@@ -43,14 +39,14 @@ export async function updateRequest(request: Partial<PaymentRequest>) {
 }
 
 export async function getAllBalances() {
-  return await serverEconomySupabase
+  return await supabase
     .from("balances")
     .select("user_id, username, balance")
     .order("balance", { ascending: false });
 }
 
 export async function getRecentTransactions(userId: User["id"]) {
-  return await serverEconomySupabase
+  return await supabase
     .from("transactions")
     .select("sender_id, receiver_id, amount, type, timestamp")
     .or(`sender_id.eq.${userId},receiver_id.eq.${userId}`)
