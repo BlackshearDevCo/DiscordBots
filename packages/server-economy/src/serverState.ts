@@ -4,6 +4,7 @@ let serverState: ServerState = {
   voiceChannelEntries: {},
   robCooldowns: {},
   dailyRewardCooldown: {},
+  gambleCooldown: {},
 };
 
 function updateServerState(newServerState: Partial<ServerState>) {

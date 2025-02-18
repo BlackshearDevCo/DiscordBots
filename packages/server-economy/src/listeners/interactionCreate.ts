@@ -9,6 +9,7 @@ import {
 import { handleBalance } from "src/interactions/balance";
 import { handleBank } from "src/interactions/bank";
 import { handleDailyReward } from "src/interactions/dailyReward";
+import { handleGamble } from "src/interactions/gamble";
 import { handlePay } from "src/interactions/pay";
 import {
   handleApproveRequest,
@@ -53,6 +54,10 @@ export const onInteractionCreate = (client: Client): void => {
 
       case "daily":
         handleDailyReward(interaction);
+        break;
+
+      case "gamble":
+        handleGamble(interaction);
         break;
 
       default: {

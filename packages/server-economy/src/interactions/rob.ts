@@ -6,7 +6,7 @@ import { getUserName } from "shared/utils";
 
 const TARGET_AMOUNT = 500;
 const MIN_AMOUNT = 2500;
-const STEAL_COOLDOWN = 10 * 60 * 1000; // 5 minutes in milliseconds
+const STEAL_COOLDOWN = 10 * 60 * 1000; // 10 minutes in milliseconds
 
 export async function handleRob(interaction: Interaction) {
   if (!interaction.isCommand()) return;

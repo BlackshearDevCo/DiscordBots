@@ -58,6 +58,13 @@ export const handleTransactions = async (interaction: Interaction) => {
 
             // You paid user
             return `- 💸 You paid **${receiver}** **${amount}** gold! (${time})`;
+
+          case "gamble":
+            // Lost money
+            if (amount <= 0)
+              return `- 🔴 You lost **${amount}** gold while gambling. (${time})`;
+
+            return `- 🟢 You won **${amount}** gold while gambling! (${time})`;
         }
       }
     )

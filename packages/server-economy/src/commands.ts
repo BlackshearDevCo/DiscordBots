@@ -46,4 +46,13 @@ export const commands = [
   new SlashCommandBuilder()
     .setName("daily")
     .setDescription("Redeem your daily reward!"),
+  new SlashCommandBuilder()
+    .setName("gamble")
+    .setDescription("Bet your coins and test your luck!")
+    .addIntegerOption((option) =>
+      option
+        .setName("amount")
+        .setDescription("Amount to gamble")
+        .setRequired(true)
+    ),
 ];

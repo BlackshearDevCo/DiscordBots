@@ -5,7 +5,8 @@ export type CommandName =
   | "rob"
   | "transactions"
   | "request"
-  | "daily";
+  | "daily"
+  | "gamble";
 
 export type ServerState = {
   voiceChannelEntries: {
@@ -18,6 +19,9 @@ export type ServerState = {
   };
   dailyRewardCooldown: {
     [userId: string]: string; // date string (YYYY-MM-DD)
+  };
+  gambleCooldown: {
+    [userId: string]: number; // timestamp
   };
 };
 
@@ -36,7 +40,7 @@ export interface PaymentRequest extends PaymentRequestEntry {
   created_at: string;
 }
 
-export type TransactionType = "payment" | "rob" | "earn" | "lose";
+export type TransactionType = "payment" | "rob" | "earn" | "lose" | "gamble";
 
 export interface TransactionEntry {
   sender_id?: string;
