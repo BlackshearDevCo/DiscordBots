@@ -1,0 +1,26 @@
+{
+  "name": "server-economy",
+  "version": "1.0.0",
+  "main": "dist/bot.js",
+  "types": "dist/bot.d.ts",
+  "scripts": {
+    "start": "ts-node -r tsconfig-paths/register src/bot.ts",
+    "build": "tsc --project tsconfig.json && tsc-alias",
+    "deploy-local": "yarn build && npx pm2 start dist/bot.js --name ServerEconomyDiscordBot",
+    "kill-deployment": "npx pm2 stop ServerEconomyDiscordBot"
+  },
+  "dependencies": {
+    "shared": "*",
+    "@supabase/supabase-js": "^2.48.1",
+    "discord.js": "^14.18.0",
+    "dotenv": "^16.4.7",
+    "tsconfig-paths": "^4.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.1",
+    "module-alias": "^2.2.3",
+    "ts-node": "^10.9.2",
+    "tsc-alias": "^1.8.10",
+    "typescript": "^5.7.3"
+  }
+}
